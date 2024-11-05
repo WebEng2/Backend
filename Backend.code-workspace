@@ -1,0 +1,10 @@
+{
+	"settings": {},
+	/* Used Extensions */
+	"extensions": {
+		"recommendations": [
+			"humao.rest-client",
+			"vscjava.vscode-java-pack"
+		],
+	}
+}
