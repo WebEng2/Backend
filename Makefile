@@ -9,7 +9,7 @@ stop:
 all-dev: stop-dev start-dev
 
 start-dev:
-	docker-compose -f compose.dev.yml --env-file .env --profile true  up -d
+	docker-compose -f compose.dev.yml --env-file .env  up -d
 
 stop-dev:
-	docker-compose -f compose.dev.yml --env-file .env --profile true down
+	docker-compose -f compose.dev.yml --env-file .env down
