@@ -1,7 +1,15 @@
 all: stop start
 
 start:
-	docker-compose --env-file .env --profile true  up -d
+	docker-compose -f compose.yml --env-file .env --profile true  up -d
 
 stop:
-	docker-compose --env-file .env --profile true down
+	docker-compose -f compose.yml --env-file .env --profile true down
+
+all-dev: stop-dev start-dev
+
+start-dev:
+	docker-compose -f compose.dev.yml --env-file .env --profile true  up -d
+
+stop-dev:
+	docker-compose -f compose.dev.yml --env-file .env --profile true down

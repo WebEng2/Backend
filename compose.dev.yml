@@ -2,7 +2,11 @@
 services:
   # Main Services
   openreadmap:
-    image: ghcr.io/webeng2/backend:main
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      tags:
+        - "openreadmap:latest"
     hostname: openreadmap
     ports:
       - '${OPENREADMAP_PORT}:8080'
@@ -40,4 +44,4 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: '${MONGODB_PASS}'
       ME_CONFIG_MONGODB_URL: 'mongodb://${MONGODB_USER}:${MONGODB_PASS}@mongo:${MONGODB_PORT}/'
       ME_CONFIG_BASICAUTH: false
-    profiles: ['${MONGOEXPRESS_ENABLE}']
+
