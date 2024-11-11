@@ -12,3 +12,8 @@ Backend for OpenReadMap
 1. Copy the provided `.env.template` and rename the copy to `.env`
 2. Configure the `.env` file to your liking
 3. Run `make` to start
+
+**For Development/Local building:**
+1. Copy the provided `.env.template` and rename the copy to `.env`
+2. Configure the `.env` file to your liking
+3. Run `make all-dev` to start
