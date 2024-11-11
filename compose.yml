@@ -1,0 +1,41 @@
+---
+services:
+  # Main Services
+  openreadmap:
+    build: Dockerfile
+    hostname: openreadmap
+    ports:
+      - '8080:8080'
+  
+  redis1:
+    image: redis:latest
+    hostname: redis1
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 60 1 --loglevel warning
+    volumes: 
+      - ./db/redis:/data
+
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes: 
+      - ./db/mongo:/data/db
+
+  # Development Services 
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
