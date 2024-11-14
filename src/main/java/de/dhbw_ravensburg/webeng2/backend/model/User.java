@@ -1,4 +1,4 @@
-package de.dhbw_ravensburg.webeng2.backend;
+package de.dhbw_ravensburg.webeng2.backend.model;
 
 public class User {
     private String username;

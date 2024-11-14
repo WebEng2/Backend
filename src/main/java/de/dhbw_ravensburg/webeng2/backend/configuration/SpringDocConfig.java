@@ -1,4 +1,4 @@
-package de.dhbw_ravensburg.webeng2.backend;
+package de.dhbw_ravensburg.webeng2.backend.configuration;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

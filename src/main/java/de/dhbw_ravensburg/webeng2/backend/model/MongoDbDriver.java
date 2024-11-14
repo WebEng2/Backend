@@ -1,4 +1,4 @@
-package de.dhbw_ravensburg.webeng2.backend;
+package de.dhbw_ravensburg.webeng2.backend.model;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -21,6 +21,7 @@ public class MongoDbDriver {
         try {
             mongoClient = MongoClients.create(uri);
             connected = true;
+            System.out.println("Connected to MongdoDB:");
         }
         catch (Exception e){
             System.out.println("Could not connect to MongdoDB:");

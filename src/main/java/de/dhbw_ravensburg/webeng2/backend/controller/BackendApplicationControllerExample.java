@@ -1,10 +1,10 @@
-package de.dhbw_ravensburg.webeng2.backend;
+package de.dhbw_ravensburg.webeng2.backend.controller;
 
+import de.dhbw_ravensburg.webeng2.backend.model.User;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 
 @RestController
 @RequestMapping("/api/example")
