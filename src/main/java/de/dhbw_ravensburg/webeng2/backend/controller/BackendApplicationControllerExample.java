@@ -3,10 +3,12 @@ package de.dhbw_ravensburg.webeng2.backend;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @RestController
-public class BackendApplicationController {
+@RequestMapping("/api/example")
+public class BackendApplicationControllerExample {
     @GetMapping(path="/hello")
     public String sayHello() {
         return "Hello World";
