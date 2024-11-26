@@ -2,7 +2,10 @@ package de.dhbw_ravensburg.webeng2.backend.controller;
 
 import java.util.Collection;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +27,8 @@ public class BookController {
     private BookRepository repository;
 
     @GetMapping("/")
-    public Collection<Book> findBooks() {
-        return repository.findAll();
+    public Page<Book> findBooks() {
+        return repository.findAll(Pageable.ofSize(20));
     }
 
     @GetMapping("/{id}")
