@@ -2,7 +2,7 @@
 services:
   # Main Services
   openreadmap:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
       tags:
@@ -10,8 +10,8 @@ services:
     hostname: openreadmap
     ports:
       - '${OPENREADMAP_PORT}:8080'
-    network_mode: "host" 
-  
+    network_mode: "host"
+
   redis:
     image: redis:latest
     hostname: redis
@@ -19,9 +19,9 @@ services:
     ports:
       - '${REDIS_PORT}:6379'
     command: redis-server --save 60 1 --loglevel warning
-    volumes: 
+    volumes:
       - ./db/redis:/data
-    network_mode: "host" 
+    network_mode: "host"
 
   mongo:
     image: mongo:latest
@@ -32,9 +32,9 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: '${MONGODB_USER}'
       MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_PASS}'
-    volumes: 
+    volumes:
       - ./db/mongo:/data/db
-    network_mode: "host" 
+    network_mode: "host"
 
   # Development Services 
   mongo-express:
@@ -45,7 +45,6 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: '${MONGODB_USER}'
       ME_CONFIG_MONGODB_ADMINPASSWORD: '${MONGODB_PASS}'
-      ME_CONFIG_MONGODB_URL: 'mongodb://${MONGODB_USER}:${MONGODB_PASS}@mongo:${MONGODB_PORT}/'
+      ME_CONFIG_MONGODB_URL: 'mongodb://${MONGODB_USER}:${MONGODB_PASS}@localhost:${MONGODB_PORT}/'
       ME_CONFIG_BASICAUTH: false
-    network_mode: "host" 
-
+    network_mode: "host"
