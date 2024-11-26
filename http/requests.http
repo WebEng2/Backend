@@ -9,3 +9,11 @@ POST http://localhost:8080/api/example/hello
 ### GET request to user service
 GET http://localhost:8080/api/example/user
 ###
+
+### GET Landing
+GET http://localhost:8080/
+###
+
+### GET Books
+GET http://localhost:8080/books
+###

@@ -18,6 +18,8 @@ public class SpringDocConfig {
             new Info()
             .title("OpenReadMap Backend API")
             .description("API Documentation for OpenReadMap")
+            .contact(new Contact().email("contact@openreadmap.de").name("Team OpenReadMap"))
+            .license(new License().name("GPLv3"))
         );
    } 
 }
