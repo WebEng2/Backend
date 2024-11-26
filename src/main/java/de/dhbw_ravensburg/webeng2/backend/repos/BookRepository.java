@@ -1,4 +1,4 @@
-package de.dhbw_ravensburg.webeng2.backend.controller;
+package de.dhbw_ravensburg.webeng2.backend.repos;
 
 import java.util.List;
 import de.dhbw_ravensburg.webeng2.backend.model.Book;

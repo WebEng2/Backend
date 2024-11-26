@@ -1,14 +1,25 @@
 package de.dhbw_ravensburg.webeng2.backend.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 @Document("books")
 public class Book {
-    @Id private String id;
+    @Id 
+    private String id;
+    
+    @NotEmpty
     private String name;
-    @Indexed(unique = true) private String isbn;
+
+    @NotNull @Indexed(unique = true) @Size(max = 13) @Pattern(regexp = "^([0-9]{3})?[0-9]{10}$") 
+    private String isbn;
 
     public Book(String isbn, String name) {
         super();
