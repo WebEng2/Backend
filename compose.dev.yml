@@ -10,6 +10,7 @@ services:
     hostname: openreadmap
     ports:
       - '${OPENREADMAP_PORT}:8080'
+    network_mode: "host" 
   
   redis:
     image: redis:latest
@@ -20,6 +21,7 @@ services:
     command: redis-server --save 60 1 --loglevel warning
     volumes: 
       - ./db/redis:/data
+    network_mode: "host" 
 
   mongo:
     image: mongo:latest
@@ -32,6 +34,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_PASS}'
     volumes: 
       - ./db/mongo:/data/db
+    network_mode: "host" 
 
   # Development Services 
   mongo-express:
@@ -44,4 +47,5 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: '${MONGODB_PASS}'
       ME_CONFIG_MONGODB_URL: 'mongodb://${MONGODB_USER}:${MONGODB_PASS}@mongo:${MONGODB_PORT}/'
       ME_CONFIG_BASICAUTH: false
+    network_mode: "host" 
 
