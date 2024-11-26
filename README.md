@@ -23,3 +23,7 @@ Backend for OpenReadMap
 ### API Docs
 
 Access the API Docs at `http://localhost:8080/swagger-ui.html` 
+
+## ToDo
+
+- [ ] Add Spring profiles to differenciate between Production with docker hosts and dev with localhost.
