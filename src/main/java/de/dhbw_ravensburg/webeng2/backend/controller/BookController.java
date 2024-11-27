@@ -16,12 +16,17 @@ import de.dhbw_ravensburg.webeng2.backend.model.Book;
 import de.dhbw_ravensburg.webeng2.backend.repos.BookRepository;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
+import de.dhbw_ravensburg.webeng2.backend.service.BookInfoService;
+import de.dhbw_ravensburg.webeng2.backend.model.Redis;
+
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
-
     @Autowired
     private BookRepository repository;
+    
+    @Autowired
+    private BookInfoService bookInfoService;
 
     @GetMapping("/")
     public Page<Book> findBooks() {
@@ -44,5 +49,12 @@ public class BookController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     void onIllegalArgumentException(IllegalArgumentException exception) {
         // ...
+    }
+
+    @GetMapping("/{id}/info")
+    public Redis getBookInfo(@PathVariable String id) {
+        Book book = repository.findById(id)
+            .orElseThrow(() -> new BookNotFoundException());
+        return bookInfoService.getBookInfo(book.getIsbn());
     }
 }
