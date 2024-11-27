@@ -15,4 +15,5 @@ stop-dev:
 	docker compose -f compose.dev.yml --env-file .env down
 
 rebuild-dev:
+	docker build --no-cache .
 	docker compose -f compose.dev.yml --env-file .env build
