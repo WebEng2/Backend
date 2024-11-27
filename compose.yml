@@ -6,6 +6,11 @@ services:
     hostname: openreadmap
     ports:
       - '${OPENREADMAP_PORT}:8080'
+    environment:
+      spring_data_mongodb_host: mongo
+      spring_data_spring_data_mongodb_port: ${MONGODB_PORT}
+      spring_data_spring_data_mongodb_usernamename: ${MONGODB_USER}'
+      spring_data_spring_data_mongodb_passwordword: ${MONGODB_PASS}'
   
   redis:
     image: redis:latest
