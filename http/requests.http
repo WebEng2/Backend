@@ -1,15 +1,3 @@
-### GET request to hello world service
-GET http://localhost:8080/api/examplehello
-###
-
-### POST request to hello world service
-POST http://localhost:8080/api/example/hello
-###
-
-### GET request to user service
-GET http://localhost:8080/api/example/user
-###
-
 ### GET Landing
 GET http://localhost:8080/
 ###
