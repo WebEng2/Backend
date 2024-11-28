@@ -24,17 +24,21 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.web.bind.annotation.PostMapping;
 
+import de.dhbw_ravensburg.webeng2.backend.service.BookInfoService;
+import de.dhbw_ravensburg.webeng2.backend.model.BookInfo;
+
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
-
     @Autowired
     private BookRepository repository;
+    
+    @Autowired
+    private BookInfoService bookInfoService;
 
     @GetMapping("/")
     @Operation(summary = "Get all Books", description = "Retrieves a paginated and optionally sorted list of books.")
@@ -104,5 +108,34 @@ public class BookController {
     public ResponseEntity<ErrorResponse> onBookException(BookException ex) {
         return new ResponseEntity<>(ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.getMessage()),
                 HttpStatus.BAD_REQUEST);
+    }
+
+
+    @GetMapping("/{id}/info")
+    @Operation(summary = "Get Book Info", description = "Retrieves additional information for a specific book by its ID from google and openbook api")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved book information"),
+            @ApiResponse(responseCode = "404", description = "Book not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public BookInfo getBookInfo(
+            @Parameter(description = "The ID of the book to get information for") @PathVariable String id) {
+        Book book = repository.findById(id)
+            .orElseThrow(() -> new BookException("Book not found"));
+        return bookInfoService.getBookInfo(book.getIsbn());
+    }
+
+    @GetMapping("/randominfo")
+    @Operation(summary = "Get Random Book Info", description = "Retrieves additional information for a randomly selected book from google and openbook api")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved random book information"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public BookInfo getRandomBookInfo() {
+        long count = repository.count();
+        int randomIndex = (int) (Math.random() * count);
+        Page<Book> bookPage = repository.findAll(Pageable.ofSize(1).withPage(randomIndex));
+        Book randomBook = bookPage.getContent().get(0);
+        return bookInfoService.getBookInfo(randomBook.getIsbn());
     }
 }
