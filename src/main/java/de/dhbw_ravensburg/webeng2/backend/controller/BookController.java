@@ -37,7 +37,7 @@ public class BookController {
     private BookRepository repository;
 
     @GetMapping("/")
-    @Operation(summary = "Get Books", description = "Retrieves a paginated and optionally sorted list of books.")
+    @Operation(summary = "Get all Books", description = "Retrieves a paginated and optionally sorted list of books.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved books"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters provided")
@@ -50,7 +50,7 @@ public class BookController {
     }
 
     @PostMapping("/")
-    @Operation(summary = "Create Book", description = "Creates a new book.")
+    @Operation(summary = "Create new Book", description = "Creates a new book.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Successfully created a new book"),
             @ApiResponse(responseCode = "400", description = "Invalid book data provided"),
@@ -62,7 +62,14 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public Book findById(@PathVariable String id) {
+    @Operation(summary = "Get Book by ID", description = "Retrieves a book")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved book"),
+            @ApiResponse(responseCode = "400", description = "Invalid book data provided"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public Book findById(
+            @Parameter(description = "The internal id of the book") @RequestParam @PathVariable String id) {
         return repository.findById(id).orElseThrow(() -> new BookException("Unknown ID"));
     }
 
