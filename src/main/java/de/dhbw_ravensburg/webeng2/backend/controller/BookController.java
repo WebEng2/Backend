@@ -6,6 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -59,7 +63,7 @@ public class BookController {
 
     @GetMapping("/{id}")
     public Book findById(@PathVariable String id) {
-        return repository.findById(id).orElseThrow(() -> new BookNotFoundException());
+        return repository.findById(id).orElseThrow(() -> new BookException("Unknown ID"));
     }
 
     @PutMapping("/{id}")
@@ -76,7 +80,22 @@ public class BookController {
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    void onIllegalArgumentException(IllegalArgumentException exception) {
-        // ...
+    public ResponseEntity<ErrorResponse> onIllegalArgumentException(IllegalArgumentException ex) {
+        return new ResponseEntity<>(ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.getMessage()),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> onConstraintViolationException(ConstraintViolationException ex) {
+        return new ResponseEntity<>(ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.getMessage()),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BookException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> onBookException(BookException ex) {
+        return new ResponseEntity<>(ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.getMessage()),
+                HttpStatus.BAD_REQUEST);
     }
 }
