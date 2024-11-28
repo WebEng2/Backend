@@ -57,4 +57,13 @@ public class BookController {
             .orElseThrow(() -> new BookNotFoundException());
         return bookInfoService.getBookInfo(book.getIsbn());
     }
+
+    @GetMapping("/randominfo")
+    public Redis getRandomBookInfo() {
+        long count = repository.count();
+        int randomIndex = (int) (Math.random() * count);
+        Page<Book> bookPage = repository.findAll(Pageable.ofSize(1).withPage(randomIndex));
+        Book randomBook = bookPage.getContent().get(0);
+        return bookInfoService.getBookInfo(randomBook.getIsbn());
+    }
 }
