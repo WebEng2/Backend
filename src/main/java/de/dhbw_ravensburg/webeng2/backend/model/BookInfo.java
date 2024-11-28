@@ -2,10 +2,12 @@ package de.dhbw_ravensburg.webeng2.backend.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 import java.util.Map;
 
+@Schema(description = "Book information aggregated from Google Books and Open Library APIs")
 @RedisHash("BookInfo")
 public class BookInfo {
     @Id
