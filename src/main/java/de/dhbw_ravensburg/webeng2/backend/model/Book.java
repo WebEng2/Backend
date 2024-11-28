@@ -12,13 +12,16 @@ import org.springframework.data.mongodb.core.index.Indexed;
 
 @Document("books")
 public class Book {
-    @Id 
+    @Id
     private String id;
-    
+
     @NotEmpty
     private String name;
 
-    @NotNull @Indexed(unique = true) @Size(max = 13) @Pattern(regexp = "^([0-9]{3})?[0-9]{10}$")
+    @NotNull
+    @Indexed(unique = true)
+    @Size(max = 13)
+    @Pattern(regexp = "^([0-9]{3})?[0-9]{10}$")
     private String isbn;
 
     public Book(String isbn, String name) {
@@ -46,7 +49,7 @@ public class Book {
     @Override
     public String toString() {
         return String.format(
-            "Book[isbn=%s, name='%s']",
-            isbn, name);
-  }
+                "Book[isbn=%s, name='%s']",
+                isbn, name);
+    }
 }
