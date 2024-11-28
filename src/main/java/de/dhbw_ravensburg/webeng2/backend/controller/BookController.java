@@ -2,19 +2,28 @@ package de.dhbw_ravensburg.webeng2.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.dhbw_ravensburg.webeng2.backend.model.Book;
 import de.dhbw_ravensburg.webeng2.backend.repos.BookRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/api/books")
@@ -24,8 +33,28 @@ public class BookController {
     private BookRepository repository;
 
     @GetMapping("/")
-    public Page<Book> findBooks() {
-        return repository.findAll(Pageable.ofSize(20));
+    @Operation(summary = "Get Books", description = "Retrieves a paginated and optionally sorted list of books.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved books"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters provided")
+    })
+    public Page<Book> findBooks(
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "Sort fields") @RequestParam(defaultValue = "") String[] sort) {
+        return repository.findAll(PageRequest.of(page, size, Sort.by(sort)));
+    }
+
+    @PostMapping("/")
+    @Operation(summary = "Create Book", description = "Creates a new book.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successfully created a new book"),
+            @ApiResponse(responseCode = "400", description = "Invalid book data provided"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public Book postBook(
+            @Parameter(description = "The book to be added to the repository") @RequestParam Book book) {
+        return repository.insert(book);
     }
 
     @GetMapping("/{id}")
@@ -42,7 +71,7 @@ public class BookController {
 
     @GetMapping("findByName/{name}")
     public Page<Book> findByName(@PathVariable String name) {
-        return repository.findByName(name);
+        return repository.findByName(name, Pageable.ofSize(20));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
