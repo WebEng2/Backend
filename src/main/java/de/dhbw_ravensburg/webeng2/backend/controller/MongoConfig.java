@@ -18,10 +18,9 @@ public class MongoConfig {
         return new ValidatingMongoEventListener(factory);
     }
 
-    
     @Bean
     public MongoTransactionManager transactionManager(final MongoDatabaseFactory databaseFactory) {
         return new MongoTransactionManager(databaseFactory);
     }
-    
+
 }
