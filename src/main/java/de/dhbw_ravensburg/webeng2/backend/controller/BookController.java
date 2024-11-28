@@ -24,7 +24,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -111,14 +110,27 @@ public class BookController {
                 HttpStatus.BAD_REQUEST);
     }
 
+
     @GetMapping("/{id}/info")
-    public BookInfo getBookInfo(@PathVariable String id) {
+    @Operation(summary = "Get Book Info", description = "Retrieves additional information for a specific book by its ID from google and openbook api")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved book information"),
+            @ApiResponse(responseCode = "404", description = "Book not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public BookInfo getBookInfo(
+            @Parameter(description = "The ID of the book to get information for") @PathVariable String id) {
         Book book = repository.findById(id)
-            .orElseThrow(() -> new BookNotFoundException());
+            .orElseThrow(() -> new BookException("Book not found"));
         return bookInfoService.getBookInfo(book.getIsbn());
     }
 
     @GetMapping("/randominfo")
+    @Operation(summary = "Get Random Book Info", description = "Retrieves additional information for a randomly selected book from google and openbook api")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved random book information"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public BookInfo getRandomBookInfo() {
         long count = repository.count();
         int randomIndex = (int) (Math.random() * count);
