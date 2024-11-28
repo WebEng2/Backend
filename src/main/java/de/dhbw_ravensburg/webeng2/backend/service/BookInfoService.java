@@ -3,6 +3,9 @@ package de.dhbw_ravensburg.webeng2.backend.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.lang.NonNull;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
 import de.dhbw_ravensburg.webeng2.backend.model.BookInfo;
 import de.dhbw_ravensburg.webeng2.backend.repos.RedisRepository;
@@ -22,12 +25,28 @@ public class BookInfoService {
     
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public BookInfo getBookInfo(String isbn) {
+    /**
+     * Retrieves book information from cache or external APIs.
+     * First checks Redis cache, if not found fetches from Google Books and Open Library APIs.
+     *
+     * @param isbn The ISBN of the book to lookup
+     * @return BookInfo object containing consolidated information from various sources
+     */
+    @Operation(summary = "Get Book Information", 
+              description = "Retrieves book information from cache or external APIs (Google Books and Open Library)")
+    public BookInfo getBookInfo(@Parameter(description = "ISBN of the book") @NonNull String isbn) {
         return redisRepository.findById(isbn)
             .orElseGet(() -> fetchAndCacheBookInfo(isbn));
     }
 
-    private BookInfo fetchAndCacheBookInfo(String isbn) {
+    /**
+     * Fetches book information from external APIs and caches the result.
+     * Combines data from Google Books API and Open Library API.
+     *
+     * @param isbn The ISBN of the book to fetch information for
+     * @return BookInfo object containing the fetched and cached information
+     */
+    private BookInfo fetchAndCacheBookInfo(@NonNull String isbn) {
         var bookInfo = new BookInfo(isbn);
         
         // Fetch from Google Books
@@ -51,6 +70,12 @@ public class BookInfoService {
         return bookInfo.getTitle() != null ? redisRepository.save(bookInfo) : null;
     }
 
+    /**
+     * Updates BookInfo object with data from Google Books API response.
+     *
+     * @param bookInfo The BookInfo object to update
+     * @param volumeInfo The Google Books API volume information
+     */
     private void updateFromGoogleBooks(BookInfo bookInfo, VolumeInfo volumeInfo) {
         bookInfo.setTitle(volumeInfo.title);
         bookInfo.setDescription(volumeInfo.description);
@@ -67,6 +92,12 @@ public class BookInfoService {
         bookInfo.setInfoLink(volumeInfo.infoLink);
     }
 
+    /**
+     * Updates BookInfo object with data from Open Library API response.
+     *
+     * @param bookInfo The BookInfo object to update
+     * @param olData The Open Library API response data
+     */
     private void updateFromOpenLibrary(BookInfo bookInfo, Map<String, Object> olData) {
         if (olData == null) return;
         
