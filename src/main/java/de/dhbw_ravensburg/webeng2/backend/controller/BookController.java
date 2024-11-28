@@ -17,7 +17,7 @@ import de.dhbw_ravensburg.webeng2.backend.repos.BookRepository;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 import de.dhbw_ravensburg.webeng2.backend.service.BookInfoService;
-import de.dhbw_ravensburg.webeng2.backend.model.Redis;
+import de.dhbw_ravensburg.webeng2.backend.model.BookInfo;
 
 @RestController
 @RequestMapping("/api/books")
@@ -52,14 +52,14 @@ public class BookController {
     }
 
     @GetMapping("/{id}/info")
-    public Redis getBookInfo(@PathVariable String id) {
+    public BookInfo getBookInfo(@PathVariable String id) {
         Book book = repository.findById(id)
             .orElseThrow(() -> new BookNotFoundException());
         return bookInfoService.getBookInfo(book.getIsbn());
     }
 
     @GetMapping("/randominfo")
-    public Redis getRandomBookInfo() {
+    public BookInfo getRandomBookInfo() {
         long count = repository.count();
         int randomIndex = (int) (Math.random() * count);
         Page<Book> bookPage = repository.findAll(Pageable.ofSize(1).withPage(randomIndex));
