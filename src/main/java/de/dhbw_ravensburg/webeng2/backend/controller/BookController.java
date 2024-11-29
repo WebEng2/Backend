@@ -3,6 +3,7 @@ package de.dhbw_ravensburg.webeng2.backend.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -103,12 +104,40 @@ public class BookController {
     }
     // #endregion
 
-    // #region PATCH Book by ID
-    @PatchMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Book updateBook(
-            @PathVariable("id") final String id, @RequestBody final Book book) {
-        return book;
+    // #region PUT Update Book by ID
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a Book", description = "Updates an existing book.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated book"),
+            @ApiResponse(responseCode = "400", description = "Invalid book data provided"),
+            @ApiResponse(responseCode = "204", description = "No Content")
+    })
+    public ResponseEntity<Book> updateBook(
+            @Parameter(description = "The id of the book to edid") @PathVariable("id") String id,
+            @Parameter(description = "The book to be added to the repository") @Valid @RequestBody RequestEntity<Book> book) {
+        // Check if the book exists in the database
+        Optional<Book> existingBookOptional = repository.findById(id);
+
+        if (!existingBookOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if the book doesn't exist
+        }
+        Book b = book.getBody();
+        if (b == null) {
+            throw new BookException("Can't convert input to Book");
+        }
+
+        // Get the existing book
+        Book existingBook = existingBookOptional.get();
+
+        // Update the fields of the existing book
+        existingBook.setIsbn(b.getIsbn());
+        existingBook.setName(b.getName());
+
+        // Save the updated book
+        Book updatedBook = repository.save(existingBook);
+
+        // Return the updated book with a 200 OK status code
+        return new ResponseEntity<>(updatedBook, HttpStatus.OK);
     }
     // #endregion
 
