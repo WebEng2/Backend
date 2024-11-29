@@ -18,6 +18,7 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +53,7 @@ public class BookController {
     @Autowired
     private BookInfoService bookInfoService;
 
+    // #region GET all Books
     @GetMapping("/")
     @Operation(summary = "Get all Books", description = "Retrieves a paginated and optionally sorted list of books.")
     @ApiResponses(value = {
@@ -64,7 +66,9 @@ public class BookController {
             @Parameter(description = "Sort fields") @RequestParam(defaultValue = "") String[] sort) {
         return repository.findAll(PageRequest.of(page, size, Sort.by(sort)));
     }
+    // #endregion
 
+    // #region POST new Book
     @PostMapping("/")
     @Operation(summary = "Create new Book", description = "Creates a new book.")
     @ApiResponses(value = {
@@ -83,7 +87,9 @@ public class BookController {
         // Return the saved book with a 201 status code
         return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
     }
+    // #endregion
 
+    // #region GET Book by ID
     @GetMapping("/{id}")
     @Operation(summary = "Get Book by ID", description = "Retrieves a book")
     @ApiResponses(value = {
@@ -95,20 +101,25 @@ public class BookController {
             @Parameter(description = "The internal id of the book") @RequestParam @PathVariable String id) {
         return repository.findById(id).orElseThrow(() -> new BookException("Unknown ID"));
     }
+    // #endregion
 
-    @PutMapping("/{id}")
+    // #region PATCH Book by ID
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Book updateBook(
             @PathVariable("id") final String id, @RequestBody final Book book) {
         return book;
     }
+    // #endregion
 
+    // #region GET find books by name
     @GetMapping("findByName/{name}")
     public Page<Book> findByName(@PathVariable String name) {
         return repository.findByName(name, Pageable.ofSize(20));
     }
+    // #endregion
 
-    // --- Book Info ---
+    // #region GET book info by ID
     @GetMapping("/{id}/info")
     @Operation(summary = "Get Book Info", description = "Retrieves additional information for a specific book by its ID from google and openbook api")
     @ApiResponses(value = {
@@ -122,7 +133,9 @@ public class BookController {
                 .orElseThrow(() -> new BookException("Book not found"));
         return bookInfoService.getBookInfo(book.getIsbn());
     }
+    // #endregion
 
+    // #region GET random book info
     @GetMapping("/randominfo")
     @Operation(summary = "Get Random Book Info", description = "Retrieves additional information for a randomly selected book from google and openbook api")
     @ApiResponses(value = {
@@ -136,8 +149,9 @@ public class BookController {
         Book randomBook = bookPage.getContent().get(0);
         return bookInfoService.getBookInfo(randomBook.getIsbn());
     }
+    // #endregion
 
-    // --- Exceptions ---
+    // #region Exceptions
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> onIllegalArgumentException(IllegalArgumentException ex) {
@@ -172,4 +186,5 @@ public class BookController {
         return new ResponseEntity<>(ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.getMessage()),
                 HttpStatus.BAD_REQUEST);
     }
+    // #endregion
 }
