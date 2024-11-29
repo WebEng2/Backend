@@ -50,7 +50,9 @@ import de.dhbw_ravensburg.webeng2.backend.service.BookInfoService;
 import de.dhbw_ravensburg.webeng2.backend.model.BookInfo;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET,
+        RequestMethod.POST,
+        RequestMethod.PUT })
 @RequestMapping("/api/books")
 public class BookController {
     @Autowired
