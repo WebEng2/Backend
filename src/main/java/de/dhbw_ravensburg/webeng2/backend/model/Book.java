@@ -10,26 +10,28 @@ import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-@Document("books")
+@Document(collection = "books")
 public class Book {
     @Id
     private String id;
 
-    @NotEmpty
+    @NotNull(message = "Name cannot be null")
+    @NotEmpty(message = "Name cannot be empty")
     private String name;
 
-    @NotNull
+    @NotNull(message = "ISBN cannot be null")
     @Indexed(unique = true)
-    @Size(max = 13)
+    @Size(min = 10, max = 13, message = "ISBN should be between 10 and 13 characters")
     @Pattern(regexp = "^([0-9]{3})?[0-9]{10}$")
     private String isbn;
 
+    // Constructors
     public Book(String isbn, String name) {
-        super();
         this.isbn = isbn;
         this.name = name;
     }
 
+    // Getters and Setters
     public String getName() {
         return name;
     }
