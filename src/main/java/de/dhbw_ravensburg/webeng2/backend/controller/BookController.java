@@ -1,5 +1,6 @@
 package de.dhbw_ravensburg.webeng2.backend.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -156,7 +158,7 @@ public class BookController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters provided"),
             @ApiResponse(responseCode = "404", description = "Books not found")
     })
-    public ResponseEntity<Page<Book>> searchBooksByTitle(
+    public ResponseEntity<Page<Book>> searchBooksByName(
             @Parameter(description = "Name segment of the Book") @RequestParam("name") String name,
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
@@ -193,6 +195,47 @@ public class BookController {
 
         // Return the list of books with a 200 OK status
         return new ResponseEntity<>(book, HttpStatus.OK);
+    }
+    // #endregion
+
+    // #region GET find books by any text
+    @GetMapping("/search")
+    @Operation(summary = "Find Books", description = "Retrieves a paginated and optionally sorted list of books with matching text.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved books"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters provided"),
+            @ApiResponse(responseCode = "404", description = "Books not found")
+    })
+    public ResponseEntity<Page<Book>> searchBooksByText(
+            @Parameter(description = "Text segment to match ISBN or Name") @RequestParam("text") String text,
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "Sort fields") @RequestParam(defaultValue = "") String[] sort) {
+        // Retrieve books whose title contains the search string (case-insensitive)
+        Page<Book> books = repository.findByNameContainingIgnoreCase(text, PageRequest.of(page, size, Sort.by(sort)));
+
+        // Get isbn search result
+        Book book = repository.findByIsbn(text);
+
+        // Convert to list with ISBN result
+        List<Book> bl = new ArrayList<Book>();
+        if (!books.isEmpty()) {
+            bl = books.toList();
+        }
+        if (book != null) {
+            bl.add(book);
+        }
+        if (!bl.isEmpty()) {
+            books = convertListToPage(bl, PageRequest.of(page, size, Sort.by(sort)));
+        }
+
+        if (books.isEmpty()) {
+            // If no books are found, return a 404 Not Found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Return the list of books with a 200 OK status
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
     // #endregion
 
@@ -263,5 +306,20 @@ public class BookController {
         return new ResponseEntity<>(ErrorResponse.create(ex, HttpStatus.BAD_REQUEST, ex.getMessage()),
                 HttpStatus.BAD_REQUEST);
     }
+    // #endregion
+
+    // #region Helper
+    public Page<Book> convertListToPage(List<Book> bookList, Pageable pageable) {
+        // Calculate the start and end index based on the page size and page number
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), bookList.size());
+
+        // Sublist to simulate the page
+        List<Book> pageContent = bookList.subList(start, end);
+
+        // Return a Page with content and pagination details
+        return new PageImpl<>(pageContent, pageable, bookList.size());
+    }
+
     // #endregion
 }
