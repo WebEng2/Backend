@@ -61,11 +61,18 @@ public class BookController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved books"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters provided")
     })
-    public Page<Book> findBooks(
+    public ResponseEntity<Page<Book>> findBooks(
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
             @Parameter(description = "Sort fields") @RequestParam(defaultValue = "") String[] sort) {
-        return repository.findAll(PageRequest.of(page, size, Sort.by(sort)));
+        Page<Book> books = repository.findAll(PageRequest.of(page, size, Sort.by(sort)));
+        if (books.isEmpty()) {
+            // If no books are found, return a 404 Not Found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Return the list of books with a 200 OK status
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
     // #endregion
 
@@ -141,19 +148,51 @@ public class BookController {
     }
     // #endregion
 
-    // #region GET find books by name
-    @GetMapping("/find/{name}")
+    // #region GET find books by name containing
+    @GetMapping("/searchName")
     @Operation(summary = "Find Books by name", description = "Retrieves a paginated and optionally sorted list of books with matching name.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved books"),
-            @ApiResponse(responseCode = "400", description = "Invalid parameters provided")
+            @ApiResponse(responseCode = "400", description = "Invalid parameters provided"),
+            @ApiResponse(responseCode = "404", description = "Books not found")
     })
-    public Page<Book> findByName(
-            @Parameter(description = "Name of the Book") @PathVariable("name") String name,
+    public ResponseEntity<Page<Book>> searchBooksByTitle(
+            @Parameter(description = "Name segment of the Book") @RequestParam("name") String name,
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
             @Parameter(description = "Sort fields") @RequestParam(defaultValue = "") String[] sort) {
-        return repository.findByName(name, PageRequest.of(page, size, Sort.by(sort)));
+        // Retrieve books whose title contains the search string (case-insensitive)
+        Page<Book> books = repository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.by(sort)));
+
+        if (books.isEmpty()) {
+            // If no books are found, return a 404 Not Found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Return the list of books with a 200 OK status
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+    // #endregion
+
+    // #region GET find books by ISBN
+    @GetMapping("/searchIsbn")
+    @Operation(summary = "Find Books by ISBN", description = "Retrieves a Book by ISBN.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved book"),
+            @ApiResponse(responseCode = "404", description = "Book not found")
+    })
+    public ResponseEntity<Book> searchBookByIsbn(
+            @Parameter(description = "ISBN of the Book") @RequestParam("isbn") String isbn) {
+        // Retrieve books whose title contains the search string (case-insensitive)
+        Book book = repository.findByIsbn(isbn);
+
+        if (book == null) {
+            // If no books are found, return a 404 Not Found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Return the list of books with a 200 OK status
+        return new ResponseEntity<>(book, HttpStatus.OK);
     }
     // #endregion
 
