@@ -15,6 +15,8 @@ services:
       spring_data_spring_data_mongodb_port: ${MONGODB_PORT}
       spring_data_spring_data_mongodb_usernamename: ${MONGODB_USER}'
       spring_data_spring_data_mongodb_passwordword: ${MONGODB_PASS}'
+      spring_data_redis_host: redis
+      spring_data_redis_port: ${REDIS_PORT}
 
   redis:
     image: redis:latest
