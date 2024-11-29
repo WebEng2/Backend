@@ -142,9 +142,18 @@ public class BookController {
     // #endregion
 
     // #region GET find books by name
-    @GetMapping("findByName/{name}")
-    public Page<Book> findByName(@PathVariable String name) {
-        return repository.findByName(name, Pageable.ofSize(20));
+    @GetMapping("/find/{name}")
+    @Operation(summary = "Find Books by name", description = "Retrieves a paginated and optionally sorted list of books with matching name.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved books"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters provided")
+    })
+    public Page<Book> findByName(
+            @Parameter(description = "Name of the Book") @PathVariable("name") String name,
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "Sort fields") @RequestParam(defaultValue = "") String[] sort) {
+        return repository.findByName(name, PageRequest.of(page, size, Sort.by(sort)));
     }
     // #endregion
 
