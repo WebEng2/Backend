@@ -1,11 +1,16 @@
-### GET request to hello world service
-GET http://localhost:8080/api/examplehello
+### GET Landing
+GET http://localhost:8080/
 ###
 
-### POST request to hello world service
-POST http://localhost:8080/api/example/hello
+### GET Books
+GET http://localhost:8080/books
 ###
 
-### GET request to user service
-GET http://localhost:8080/api/example/user
+
+### GET Book Info
+GET http://localhost:8080/api/books/1/info
+###
+
+### GET Book Info (Non-existent book)
+GET http://localhost:8080/api/books/999/info
 ###

@@ -2,7 +2,7 @@
 services:
   # Main Services
   openreadmap:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
       tags:
@@ -10,15 +10,22 @@ services:
     hostname: openreadmap
     ports:
       - '${OPENREADMAP_PORT}:8080'
-  
+    environment:
+      spring_data_mongodb_host: mongo
+      spring_data_spring_data_mongodb_port: ${MONGODB_PORT}
+      spring_data_spring_data_mongodb_usernamename: ${MONGODB_USER}'
+      spring_data_spring_data_mongodb_passwordword: ${MONGODB_PASS}'
+      spring_data_redis_host: redis
+      spring_data_redis_port: ${REDIS_PORT}
+
   redis:
     image: redis:latest
     hostname: redis
     restart: always
     ports:
       - '${REDIS_PORT}:6379'
-    command: redis-server --save 60 1 --loglevel warning
-    volumes: 
+    command: redis-server --appendonly yes --save 60 1 --loglevel warning
+    volumes:
       - ./db/redis:/data
 
   mongo:
@@ -30,7 +37,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: '${MONGODB_USER}'
       MONGO_INITDB_ROOT_PASSWORD: '${MONGODB_PASS}'
-    volumes: 
+    volumes:
       - ./db/mongo:/data/db
 
   # Development Services 
@@ -44,4 +51,3 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: '${MONGODB_PASS}'
       ME_CONFIG_MONGODB_URL: 'mongodb://${MONGODB_USER}:${MONGODB_PASS}@mongo:${MONGODB_PORT}/'
       ME_CONFIG_BASICAUTH: false
-

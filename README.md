@@ -22,4 +22,4 @@ Backend for OpenReadMap
 
 ### API Docs
 
-Access the API Docs at `http://localhost:8080/swagger-ui/index.html` 
+Access the API Docs at `http://localhost:8080/swagger-ui.html` 
