@@ -61,7 +61,8 @@ public class BookController {
     @Operation(summary = "Get all Books", description = "Retrieves a paginated and optionally sorted list of books.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved books"),
-            @ApiResponse(responseCode = "400", description = "Invalid parameters provided")
+            @ApiResponse(responseCode = "400", description = "Invalid parameters provided"),
+            @ApiResponse(responseCode = "404", description = "No books in Database")
     })
     public ResponseEntity<Page<Book>> findBooks(
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
@@ -119,7 +120,8 @@ public class BookController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated book"),
             @ApiResponse(responseCode = "400", description = "Invalid book data provided"),
-            @ApiResponse(responseCode = "204", description = "No Content")
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "404", description = "Book does not exist")
     })
     public ResponseEntity<Book> updateBook(
             @Parameter(description = "The id of the book to edid") @PathVariable("id") String id,
