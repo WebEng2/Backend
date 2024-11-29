@@ -15,9 +15,9 @@ public class Book {
     @Id
     private String id;
 
-    @NotNull(message = "Name cannot be null")
-    @NotEmpty(message = "Name cannot be empty")
-    private String name;
+    @NotNull(message = "Title cannot be null")
+    @NotEmpty(message = "Title cannot be empty")
+    private String title;
 
     @NotNull(message = "ISBN cannot be null")
     @Indexed(unique = true)
@@ -26,18 +26,18 @@ public class Book {
     private String isbn;
 
     // Constructors
-    public Book(String isbn, String name) {
+    public Book(String isbn, String title) {
         this.isbn = isbn;
-        this.name = name;
+        this.title = title;
     }
 
     // Getters and Setters
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getIsbn() {
@@ -51,7 +51,7 @@ public class Book {
     @Override
     public String toString() {
         return String.format(
-                "Book[isbn=%s, name='%s']",
-                isbn, name);
+                "Book[isbn=%s, title='%s']",
+                isbn, title);
     }
 }

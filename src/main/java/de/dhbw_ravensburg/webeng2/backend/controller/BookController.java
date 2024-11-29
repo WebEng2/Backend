@@ -140,7 +140,7 @@ public class BookController {
 
         // Update the fields of the existing book
         existingBook.setIsbn(b.getIsbn());
-        existingBook.setName(b.getName());
+        existingBook.setTitle(b.getTitle());
 
         // Save the updated book
         Book updatedBook = repository.save(existingBook);
@@ -150,21 +150,21 @@ public class BookController {
     }
     // #endregion
 
-    // #region GET find books by name containing
-    @GetMapping("/searchName")
-    @Operation(summary = "Find Books by name", description = "Retrieves a paginated and optionally sorted list of books with matching name.")
+    // #region GET find books by Title containing
+    @GetMapping("/searchTitle")
+    @Operation(summary = "Find Books by title", description = "Retrieves a paginated and optionally sorted list of books with matching title.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved books"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters provided"),
             @ApiResponse(responseCode = "404", description = "Books not found")
     })
-    public ResponseEntity<Page<Book>> searchBooksByName(
-            @Parameter(description = "Name segment of the Book") @RequestParam("name") String name,
+    public ResponseEntity<Page<Book>> searchBooksByTitle(
+            @Parameter(description = "Title segment of the Book") @RequestParam("title") String title,
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
             @Parameter(description = "Sort fields") @RequestParam(defaultValue = "") String[] sort) {
         // Retrieve books whose title contains the search string (case-insensitive)
-        Page<Book> books = repository.findByNameContainingIgnoreCase(name, PageRequest.of(page, size, Sort.by(sort)));
+        Page<Book> books = repository.findByTitleContainingIgnoreCase(title, PageRequest.of(page, size, Sort.by(sort)));
 
         if (books.isEmpty()) {
             // If no books are found, return a 404 Not Found
@@ -207,12 +207,12 @@ public class BookController {
             @ApiResponse(responseCode = "404", description = "Books not found")
     })
     public ResponseEntity<Page<Book>> searchBooksByText(
-            @Parameter(description = "Text segment to match ISBN or Name") @RequestParam("text") String text,
+            @Parameter(description = "Text segment to match ISBN or Title") @RequestParam("text") String text,
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
             @Parameter(description = "Sort fields") @RequestParam(defaultValue = "") String[] sort) {
         // Retrieve books whose title contains the search string (case-insensitive)
-        Page<Book> books = repository.findByNameContainingIgnoreCase(text, PageRequest.of(page, size, Sort.by(sort)));
+        Page<Book> books = repository.findByTitleContainingIgnoreCase(text, PageRequest.of(page, size, Sort.by(sort)));
 
         // Get isbn search result
         Book book = repository.findByIsbn(text);

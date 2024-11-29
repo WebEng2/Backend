@@ -1,12 +1,11 @@
 package de.dhbw_ravensburg.webeng2.backend.repos;
 
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import de.dhbw_ravensburg.webeng2.backend.model.BookInfo;
 
-
-@Repository
+@RepositoryRestResource(collectionResourceRel = "bookInfos", path = "bookInfos", exported = false)
 public interface RedisRepository extends CrudRepository<BookInfo, String> {
-    
+
 }
