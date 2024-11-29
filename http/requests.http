@@ -3,14 +3,10 @@ GET http://localhost:8080/
 ###
 
 ### GET Books
-GET http://localhost:8080/books
+GET http://localhost:8080/api/books/
 ###
 
 
-### GET Book Info
-GET http://localhost:8080/api/books/1/info
-###
-
-### GET Book Info (Non-existent book)
-GET http://localhost:8080/api/books/999/info
+### GET Book random Info
+GET http://localhost:8080/api/books/randominfo
 ###
