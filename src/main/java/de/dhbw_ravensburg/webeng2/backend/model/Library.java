@@ -17,6 +17,10 @@ public class Library {
     @NotEmpty(message = "Name cannot be empty")
     private String name;
 
+    @NotNull(message = "Distance cannot be null")
+    @NotEmpty(message = "Distance cannot be empty")
+    private float distance;
+
     @NotNull(message = "Inventory cannot be null")
     private List<String> isbnList;
 
@@ -44,6 +48,14 @@ public class Library {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(float distance) {
+        this.distance = distance;
     }
 
     public List<String> getIsbnList() {
