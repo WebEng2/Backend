@@ -25,9 +25,10 @@ public class Library {
     private List<String> isbnList;
 
     // Constructors
-    public Library(String name, List<String> isbnList) {
+    public Library(String name, List<String> isbnList, float distance) {
         this.name = name;
         this.isbnList = isbnList;
+        this.distance = distance;
     }
 
     public Library() {

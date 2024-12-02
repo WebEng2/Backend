@@ -62,7 +62,7 @@ public class LibraryController {
 
         // Return the list of libraries with a 200 OK status
         Page<LibraryDTO> libs = convertListDTOToPage(libraries.stream()
-                .map(library -> new LibraryDTO(library.getId(), library.getName()))
+                .map(library -> new LibraryDTO(library.getId(), library.getName(), library.getDistance()))
                 .collect(Collectors.toList()), PageRequest.of(page, size, Sort.by(sort)));
         return new ResponseEntity<>(libs, HttpStatus.OK);
     }
@@ -165,7 +165,8 @@ public class LibraryController {
 
         // Return the list of libraries with a 200 OK status
         Page<LibraryDTO> libs = convertListDTOToPage(libraries.stream()
-                .map(library -> new LibraryDTO(library.getId(), library.getName()))
+                .map(library -> new LibraryDTO(library.getId(), library.getName(), library
+                        .getDistance()))
                 .collect(Collectors.toList()), PageRequest.of(page, size, Sort.by(sort)));
         return new ResponseEntity<>(libs, HttpStatus.OK);
     }
@@ -196,7 +197,8 @@ public class LibraryController {
 
         // Return the list of libraries with a 200 OK status
         Page<LibraryDTO> libs = convertListDTOToPage(libraries.stream()
-                .map(library -> new LibraryDTO(library.getId(), library.getName()))
+                .map(library -> new LibraryDTO(library.getId(), library.getName(), library
+                        .getDistance()))
                 .collect(Collectors.toList()), PageRequest.of(page, size, Sort.by(sort)));
         return new ResponseEntity<>(libs, HttpStatus.OK);
     }
