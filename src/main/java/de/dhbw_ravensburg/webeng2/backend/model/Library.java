@@ -26,6 +26,9 @@ public class Library {
         this.isbnList = isbnList;
     }
 
+    public Library() {
+    }
+
     // Getters and Setters
     public String getId() {
         return id;
