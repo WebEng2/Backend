@@ -163,6 +163,34 @@ public class LibraryController {
     }
     // #endregion
 
+    // #region GET find libraries by Name containing
+    @GetMapping("/searchHasISBN")
+    @Operation(summary = "Find Libraries stocking a Book with ISBN", description = "Retrieves a paginated and optionally sorted list of libraries that stock the book.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved libraries"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters provided"),
+            @ApiResponse(responseCode = "404", description = "Libraries not found")
+    })
+    public ResponseEntity<Page<Library>> searchLibrariesHasISBN(
+            @Parameter(description = "ISBN of desired Book") @RequestParam("isbn") String isbn,
+            @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "Sort fields") @RequestParam(defaultValue = "") String[] sort) {
+        // Retrieve libraries whose name contains the search string (case-insensitive)
+        Page<Library> libraries = repository.findByIsbnListContaining(
+                isbn,
+                PageRequest.of(page, size, Sort.by(sort)));
+
+        if (libraries.isEmpty()) {
+            // If no libraries are found, return a 404 Not Found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Return the list of libraries with a 200 OK status
+        return new ResponseEntity<>(libraries, HttpStatus.OK);
+    }
+    // #endregion
+
     // #region Exceptions
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
