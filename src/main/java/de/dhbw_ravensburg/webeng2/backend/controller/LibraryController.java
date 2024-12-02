@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.dhbw_ravensburg.webeng2.backend.model.Library;
+import de.dhbw_ravensburg.webeng2.backend.model.LibraryDTO;
 import de.dhbw_ravensburg.webeng2.backend.repos.LibraryRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,6 +33,7 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/libraries")
@@ -48,7 +50,7 @@ public class LibraryController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters provided"),
             @ApiResponse(responseCode = "404", description = "No libraries in Database")
     })
-    public ResponseEntity<Page<Library>> findLibraries(
+    public ResponseEntity<Page<LibraryDTO>> findLibraries(
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
             @Parameter(description = "Sort fields") @RequestParam(defaultValue = "") String[] sort) {
@@ -59,7 +61,10 @@ public class LibraryController {
         }
 
         // Return the list of libraries with a 200 OK status
-        return new ResponseEntity<>(libraries, HttpStatus.OK);
+        Page<LibraryDTO> libs = convertListDTOToPage(libraries.stream()
+                .map(library -> new LibraryDTO(library.getId(), library.getName()))
+                .collect(Collectors.toList()), PageRequest.of(page, size, Sort.by(sort)));
+        return new ResponseEntity<>(libs, HttpStatus.OK);
     }
     // #endregion
 
@@ -144,7 +149,7 @@ public class LibraryController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters provided"),
             @ApiResponse(responseCode = "404", description = "Libraries not found")
     })
-    public ResponseEntity<Page<Library>> searchLibrariesByTitle(
+    public ResponseEntity<Page<LibraryDTO>> searchLibrariesByTitle(
             @Parameter(description = "Name segment of the Library") @RequestParam("name") String name,
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
@@ -159,11 +164,14 @@ public class LibraryController {
         }
 
         // Return the list of libraries with a 200 OK status
-        return new ResponseEntity<>(libraries, HttpStatus.OK);
+        Page<LibraryDTO> libs = convertListDTOToPage(libraries.stream()
+                .map(library -> new LibraryDTO(library.getId(), library.getName()))
+                .collect(Collectors.toList()), PageRequest.of(page, size, Sort.by(sort)));
+        return new ResponseEntity<>(libs, HttpStatus.OK);
     }
     // #endregion
 
-    // #region GET find libraries by Name containing
+    // #region GET find libraries by ISBN in Stock
     @GetMapping("/searchHasISBN")
     @Operation(summary = "Find Libraries stocking a Book with ISBN", description = "Retrieves a paginated and optionally sorted list of libraries that stock the book.")
     @ApiResponses(value = {
@@ -171,7 +179,7 @@ public class LibraryController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters provided"),
             @ApiResponse(responseCode = "404", description = "Libraries not found")
     })
-    public ResponseEntity<Page<Library>> searchLibrariesHasISBN(
+    public ResponseEntity<Page<LibraryDTO>> searchLibrariesHasISBN(
             @Parameter(description = "ISBN of desired Book") @RequestParam("isbn") String isbn,
             @Parameter(description = "Page number") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size") @RequestParam(defaultValue = "20") int size,
@@ -187,7 +195,10 @@ public class LibraryController {
         }
 
         // Return the list of libraries with a 200 OK status
-        return new ResponseEntity<>(libraries, HttpStatus.OK);
+        Page<LibraryDTO> libs = convertListDTOToPage(libraries.stream()
+                .map(library -> new LibraryDTO(library.getId(), library.getName()))
+                .collect(Collectors.toList()), PageRequest.of(page, size, Sort.by(sort)));
+        return new ResponseEntity<>(libs, HttpStatus.OK);
     }
     // #endregion
 
@@ -236,6 +247,18 @@ public class LibraryController {
 
         // Sublist to simulate the page
         List<Library> pageContent = libraryList.subList(start, end);
+
+        // Return a Page with content and pagination details
+        return new PageImpl<>(pageContent, pageable, libraryList.size());
+    }
+
+    public Page<LibraryDTO> convertListDTOToPage(List<LibraryDTO> libraryList, Pageable pageable) {
+        // Calculate the start and end index based on the page size and page number
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), libraryList.size());
+
+        // Sublist to simulate the page
+        List<LibraryDTO> pageContent = libraryList.subList(start, end);
 
         // Return a Page with content and pagination details
         return new PageImpl<>(pageContent, pageable, libraryList.size());
