@@ -193,15 +193,15 @@ public class BookController {
     public ResponseEntity<Book> searchBookByIsbn(
             @Parameter(description = "ISBN of the Book") @RequestParam("isbn") String isbn) {
         // Retrieve books whose title contains the search string (case-insensitive)
-        Book book = repository.findByIsbn(isbn);
+        Optional<Book> book = repository.findByIsbn(isbn);
 
-        if (book == null) {
+        if (book.isEmpty()) {
             // If no books are found, return a 404 Not Found
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         // Return the list of books with a 200 OK status
-        return new ResponseEntity<>(book, HttpStatus.OK);
+        return new ResponseEntity<>(book.get(), HttpStatus.OK);
     }
     // #endregion
 
@@ -222,15 +222,15 @@ public class BookController {
         Page<Book> books = repository.findByTitleContainingIgnoreCase(text, PageRequest.of(page, size, Sort.by(sort)));
 
         // Get isbn search result
-        Book book = repository.findByIsbn(text);
+        Optional<Book> book = repository.findByIsbn(text);
 
         // Convert to list with ISBN result
         List<Book> bl = new ArrayList<Book>();
         if (!books.isEmpty()) {
             bl = books.toList();
         }
-        if (book != null) {
-            bl.add(book);
+        if (book.isPresent()) {
+            bl.add(book.get());
         }
         if (!bl.isEmpty()) {
             books = convertListToPage(bl, PageRequest.of(page, size, Sort.by(sort)));
