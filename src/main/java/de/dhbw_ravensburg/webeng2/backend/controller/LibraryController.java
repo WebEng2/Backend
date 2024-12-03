@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -144,6 +145,35 @@ public class LibraryController {
 
                 // Return the updated library with a 200 OK status code
                 return new ResponseEntity<>(updatedLibrary, HttpStatus.OK);
+        }
+        // #endregion
+
+        // #region DELETE DELETE Library by ID
+        @DeleteMapping("/{id}")
+        @Operation(summary = "Delete a Library", description = "Deletes an existing library.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Successfully deleted library"),
+                        @ApiResponse(responseCode = "400", description = "Invalid library data provided"),
+                        @ApiResponse(responseCode = "204", description = "No Content"),
+                        @ApiResponse(responseCode = "404", description = "Library does not exist")
+        })
+        public ResponseEntity<Library> deleteLibrary(
+                        @Parameter(description = "The id of the library to delete") @PathVariable("id") String id) {
+                // Check if the library exists in the database
+                Optional<Library> existingLibraryOptional = repository.findById(id);
+
+                if (!existingLibraryOptional.isPresent()) {
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if the library doesn't exist
+                }
+
+                // Get the existing library
+                Library existingLibrary = existingLibraryOptional.get();
+
+                // Delete the updated library
+                repository.delete(existingLibrary);
+
+                // Return the status code
+                return new ResponseEntity<>(HttpStatus.OK);
         }
         // #endregion
 

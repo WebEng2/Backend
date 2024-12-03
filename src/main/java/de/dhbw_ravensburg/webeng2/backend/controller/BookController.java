@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import de.dhbw_ravensburg.webeng2.backend.service.BookInfoService;
 import de.dhbw_ravensburg.webeng2.backend.model.BookInfo;
+import de.dhbw_ravensburg.webeng2.backend.model.Library;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = { RequestMethod.GET,
@@ -145,6 +147,35 @@ public class BookController {
 
         // Return the updated book with a 200 OK status code
         return new ResponseEntity<>(updatedBook, HttpStatus.OK);
+    }
+    // #endregion
+
+    // #region DELETE DELETE Book by ID
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a Book", description = "Deletes an existing book.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully deleted book"),
+            @ApiResponse(responseCode = "400", description = "Invalid book data provided"),
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "404", description = "Book does not exist")
+    })
+    public ResponseEntity<Book> deleteBook(
+            @Parameter(description = "The id of the book to delete") @PathVariable("id") String id) {
+        // Check if the library exists in the database
+        Optional<Book> existingBookOptional = repository.findById(id);
+
+        if (!existingBookOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if the library doesn't exist
+        }
+
+        // Get the existing library
+        Book existingBook = existingBookOptional.get();
+
+        // Delete the updated library
+        repository.delete(existingBook);
+
+        // Return the status code
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     // #endregion
 
